@@ -19,6 +19,13 @@
     "pincode": "641034",
     "country": "India"
   },
+  "location": {
+    "latitude": 10.8490032,
+    "longitude": 77.2112945,
+    "placeId": "ChIJBQAOEg6f3ToRcAT4_3d17dM",
+    "mapLink": "https://www.google.com/maps/place/Lifecare+Pet+Speciality+Clinic/@10.8490032,77.2112945,17z/data=!3m1!4b1!4m6!3m5!1s0x9dd49f0e129e005:0xd3eb7577ffa80470!8m2!3d10.8490032!4d77.2112945!16s%2Fg%2F11yyhljhcm",
+    "mapLinkShort": "https://maps.app.goo.gl/FCN9StSahZebzHbi6"
+  },
   "contact": {
     "phone": "+91 90879 90819",
     "emergencyPhone": "+91 90879 90819",

@@ -48,7 +48,18 @@ export const CreativeServiceCard: React.FC<CreativeServiceCardProps> = ({
   const [isHovered, setIsHovered] = useState(false);
   const [pawPrints, setPawPrints] = useState<{ id: number; x: number; y: number }[]>([]);
   const IconComponent = iconMap[icon] || Stethoscope;
-  const colorTheme = cardColors[Math.floor(Math.random() * cardColors.length)];
+
+  // Deterministic color selection based on id to avoid hydration mismatch
+  const hashString = (str: string) => {
+    let hash = 0;
+    for (let i = 0; i < str.length; i++) {
+      const char = str.charCodeAt(i);
+      hash = ((hash << 5) - hash) + char;
+      hash = hash & hash;
+    }
+    return Math.abs(hash);
+  };
+  const colorTheme = cardColors[hashString(id) % cardColors.length];
 
   const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
     const rect = e.currentTarget.getBoundingClientRect();

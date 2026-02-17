@@ -39,7 +39,7 @@ export const Footer: React.FC = () => {
             <div className="flex items-center gap-3 mb-4">
               <div className="relative w-12 h-12 flex-shrink-0">
                 <Image
-                  src="/images/logo.png"
+                  src="/images/logo.svg"
                   alt="Lifecare Pet Specialty Clinic Logo"
                   width={48}
                   height={48}
@@ -93,9 +93,7 @@ export const Footer: React.FC = () => {
                 { name: 'Services', href: '/services' },
                 { name: 'Our Team', href: '/team' },
                 { name: 'Gallery', href: '/gallery' },
-                { name: 'Blog', href: '/blog' },
                 { name: 'Contact', href: '/contact' },
-                { name: 'FAQ', href: '/faq' },
               ].map((link) => (
                 <li key={link.name}>
                   <Link
@@ -184,18 +182,10 @@ export const Footer: React.FC = () => {
         <div className="h-px bg-gradient-to-r from-transparent via-white/20 to-transparent mb-8" />
 
         {/* Bottom Bar */}
-        <div className="flex flex-col md:flex-row justify-between items-center gap-4 text-sm text-gray-400">
+        <div className="flex flex-col md:flex-row justify-center items-center gap-4 text-sm text-gray-400">
           <p>
             &copy; {new Date().getFullYear()} {clinicInfo.name}. All rights reserved.
           </p>
-          <div className="flex gap-6">
-            <Link href="/privacy" className="hover:text-[#FF6B7A] transition-colors">
-              Privacy Policy
-            </Link>
-            <Link href="/terms" className="hover:text-[#FF6B7A] transition-colors">
-              Terms & Conditions
-            </Link>
-          </div>
         </div>
       </div>
     </footer>

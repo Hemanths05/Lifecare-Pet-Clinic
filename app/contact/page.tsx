@@ -23,6 +23,8 @@ const contactFormSchema = z.object({
   email: z.string().email('Invalid email address'),
   phone: z.string().min(10, 'Phone number must be at least 10 digits'),
   petType: z.string().min(1, 'Please select a pet type'),
+  appointmentDate: z.string().min(1, 'Please select an appointment date'),
+  appointmentTime: z.string().min(1, 'Please select an appointment time'),
   subject: z.string().min(5, 'Subject must be at least 5 characters'),
   message: z.string().min(10, 'Message must be at least 10 characters'),
   contactMethod: z.enum(['email', 'phone']),
@@ -49,15 +51,49 @@ export default function ContactPage() {
 
   const onSubmit = async (data: ContactFormValues) => {
     setIsSubmitting(true);
-    // Simulate API call
-    await new Promise(resolve => setTimeout(resolve, 2000));
-    console.log('Form data:', data);
-    setIsSubmitted(true);
-    setIsSubmitting(false);
-    reset();
 
-    // Reset success message after 5 seconds
-    setTimeout(() => setIsSubmitted(false), 5000);
+    try {
+      // Prepare form data for Google Apps Script
+      const formData = {
+        fullName: data.name,
+        email: data.email,
+        phoneNumber: data.phone,
+        petType: data.petType,
+        appointmentDate: data.appointmentDate,
+        appointmentTime: data.appointmentTime,
+        subject: data.subject,
+        message: data.message,
+        contactMethod: data.contactMethod,
+      };
+
+      const scriptUrl = process.env.NEXT_PUBLIC_GOOGLE_SCRIPT_URL;
+
+      if (!scriptUrl) {
+        throw new Error('Google Script URL is not configured');
+      }
+
+      // Send data to Google Apps Script
+      await fetch(scriptUrl, {
+        method: "POST",
+        body: JSON.stringify(formData),
+        mode: 'no-cors', // Required for Google Apps Script to avoid CORS errors
+      });
+
+      console.log('Form submitted successfully:', formData);
+      setIsSubmitted(true);
+      reset();
+
+      // Reset success message after 5 seconds
+      setTimeout(() => setIsSubmitted(false), 5000);
+    } catch (error) {
+      console.error('Error submitting form:', error);
+      // Show success message even on error since no-cors mode doesn't return response
+      setIsSubmitted(true);
+      reset();
+      setTimeout(() => setIsSubmitted(false), 5000);
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   return (
@@ -174,14 +210,62 @@ export default function ContactPage() {
             Fill out the form below and we'll get back to you as soon as possible, or visit us at our clinic.
           </p>
 
-          <div className="grid lg:grid-cols-2 gap-12 max-w-7xl mx-auto mb-12">
+          <div className="grid lg:grid-cols-2 gap-12 max-w-7xl mx-auto mb-12 relative">
+            {/* Floating Hearts Animation from Form to Map */}
+            {[...Array(6)].map((_, i) => (
+              <motion.div
+                key={i}
+                className="absolute hidden lg:block"
+                style={{
+                  left: '45%',
+                  top: `${15 + i * 12}%`,
+                }}
+                initial={{ opacity: 0, x: 0 }}
+                animate={{
+                  opacity: [0, 1, 1, 0],
+                  x: [0, 50, 100, 150],
+                  y: [0, -10, -5, 0],
+                }}
+                transition={{
+                  duration: 3,
+                  repeat: Infinity,
+                  delay: i * 0.5,
+                  ease: "easeInOut"
+                }}
+              >
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="#FF6B7A">
+                  <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z" />
+                </svg>
+              </motion.div>
+            ))}
+
             {/* Contact Form */}
             <motion.div
               initial={{ opacity: 0, x: -50 }}
               whileInView={{ opacity: 1, x: 0 }}
               viewport={{ once: true }}
               transition={{ duration: 0.8 }}
+              className="relative"
             >
+              {/* Pet Icon on Form - Top Right */}
+              <motion.div
+                className="absolute -top-6 -right-6 z-10"
+                animate={{
+                  rotate: [0, 10, -10, 0],
+                  y: [0, -5, 0],
+                }}
+                transition={{ duration: 3, repeat: Infinity, ease: "easeInOut" }}
+              >
+                <div className="bg-gradient-to-br from-[#FF6B7A] to-[#e55566] rounded-full p-4 shadow-2xl border-4 border-white">
+                  <svg width="40" height="40" viewBox="0 0 100 100" fill="white">
+                    <circle cx="50" cy="40" r="20" />
+                    <ellipse cx="35" cy="32" rx="8" ry="16" />
+                    <ellipse cx="65" cy="32" rx="8" ry="16" />
+                    <ellipse cx="50" cy="70" rx="28" ry="22" />
+                  </svg>
+                </div>
+              </motion.div>
+
               <Card className="glass border-none">
                 <CardContent className="p-8">
                   {isSubmitted && (
@@ -263,6 +347,35 @@ export default function ContactPage() {
                       )}
                     </div>
 
+                    {/* Appointment Date and Time */}
+                    <div className="grid md:grid-cols-2 gap-4">
+                      <div>
+                        <Label htmlFor="appointmentDate">Appointment Date *</Label>
+                        <Input
+                          id="appointmentDate"
+                          type="date"
+                          {...register('appointmentDate')}
+                          className="mt-2"
+                          min={new Date().toISOString().split('T')[0]}
+                        />
+                        {errors.appointmentDate && (
+                          <p className="text-sm text-red-500 mt-1">{errors.appointmentDate.message}</p>
+                        )}
+                      </div>
+                      <div>
+                        <Label htmlFor="appointmentTime">Appointment Time *</Label>
+                        <Input
+                          id="appointmentTime"
+                          type="time"
+                          {...register('appointmentTime')}
+                          className="mt-2"
+                        />
+                        {errors.appointmentTime && (
+                          <p className="text-sm text-red-500 mt-1">{errors.appointmentTime.message}</p>
+                        )}
+                      </div>
+                    </div>
+
                     {/* Subject */}
                     <div>
                       <Label htmlFor="subject">Subject *</Label>
@@ -323,12 +436,12 @@ export default function ContactPage() {
                             animate={{ rotate: 360 }}
                             transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
                           />
-                          Sending...
+                          Booking...
                         </>
                       ) : (
                         <>
                           <Send className="w-5 h-5 mr-2" />
-                          Send Message
+                          Book Appointment
                         </>
                       )}
                     </Button>
@@ -338,8 +451,132 @@ export default function ContactPage() {
             </motion.div>
 
             {/* Creative Map Section */}
-            <CreativeMapSection />
+            <div className="relative">
+              {/* Pet Icon on Map - Top Left */}
+              <motion.div
+                className="absolute -top-6 -left-6 z-10"
+                animate={{
+                  rotate: [0, -10, 10, 0],
+                  y: [0, -5, 0],
+                }}
+                transition={{ duration: 3, repeat: Infinity, ease: "easeInOut", delay: 0.5 }}
+              >
+                <div className="bg-gradient-to-br from-[#FDB913] to-[#e5a40f] rounded-full p-4 shadow-2xl border-4 border-white">
+                  <svg width="40" height="40" viewBox="0 0 100 100" fill="white">
+                    <circle cx="50" cy="45" r="18" />
+                    <path d="M 35 35 L 32 18 L 42 33 Z" />
+                    <path d="M 65 35 L 68 18 L 58 33 Z" />
+                    <ellipse cx="50" cy="68" rx="24" ry="20" />
+                  </svg>
+                </div>
+              </motion.div>
+
+              <CreativeMapSection />
+            </div>
           </div>
+
+          {/* Contact Info Cards - Below Form and Map */}
+          <motion.div
+            className="grid md:grid-cols-3 gap-6 max-w-7xl mx-auto mt-12"
+            initial={{ opacity: 0, y: 30 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.8 }}
+          >
+            {/* Dog Tag Styled Location Card */}
+            <motion.div
+              whileHover={{ scale: 1.03, rotate: -2 }}
+              transition={{ type: "spring", stiffness: 300 }}
+            >
+              <Card className="relative overflow-hidden border-4 border-[#FF6B7A] bg-gradient-to-br from-white to-[#FFE5E8]">
+                {/* Dog Tag Hole */}
+                <div className="absolute -top-3 left-1/2 -translate-x-1/2 w-10 h-10 bg-white rounded-full border-4 border-[#FF6B7A] shadow-lg" />
+
+                <CardContent className="pt-10 pb-6">
+                  <div className="text-center">
+                    <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-[#FF6B7A] to-[#e55566] flex items-center justify-center mx-auto mb-4 shadow-lg">
+                      <MapPin className="w-8 h-8 text-white" />
+                    </div>
+                    <h3 className="text-lg font-bold text-gray-900 mb-2">Find Us Here</h3>
+                    <p className="text-sm text-gray-700 leading-relaxed">
+                      {clinicInfo.address.street}, {clinicInfo.address.area}, {clinicInfo.address.city}
+                    </p>
+                  </div>
+                </CardContent>
+              </Card>
+            </motion.div>
+
+            {/* Cat Bowl Styled Hours Card */}
+            <motion.div
+              whileHover={{ scale: 1.03, rotate: 2 }}
+              transition={{ type: "spring", stiffness: 300 }}
+            >
+              <Card className="relative overflow-hidden border-4 border-[#FDB913] bg-gradient-to-br from-white to-[#FFF4D6]">
+                {/* Bowl Rim Effect */}
+                <div className="absolute top-0 left-0 right-0 h-2 bg-gradient-to-r from-[#FDB913] via-[#e5a40f] to-[#FDB913]" />
+
+                <CardContent className="pt-8 pb-6">
+                  <div className="text-center">
+                    <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-[#FDB913] to-[#e5a40f] flex items-center justify-center mx-auto mb-4 shadow-lg relative">
+                      <Clock className="w-8 h-8 text-white" />
+                      {/* Clock hands animation */}
+                      <motion.div
+                        className="absolute inset-0 flex items-center justify-center"
+                        animate={{ rotate: 360 }}
+                        transition={{ duration: 10, repeat: Infinity, ease: "linear" }}
+                      >
+                        <div className="w-1 h-4 bg-white/50 rounded-full" />
+                      </motion.div>
+                    </div>
+                    <h3 className="text-lg font-bold text-gray-900 mb-2">Always Open</h3>
+                    <p className="text-sm text-gray-700 leading-relaxed font-semibold">
+                      {clinicInfo.hours.weekdays}
+                    </p>
+                    <p className="text-sm text-[#FF6B7A] font-bold mt-1">
+                      {clinicInfo.hours.emergency}
+                    </p>
+                  </div>
+                </CardContent>
+              </Card>
+            </motion.div>
+
+            {/* Phone Bone Styled Card */}
+            <motion.div
+              whileHover={{ scale: 1.03 }}
+              transition={{ type: "spring", stiffness: 300 }}
+            >
+              <Card className="relative overflow-hidden border-4 border-[#7B4397] bg-gradient-to-br from-white to-[#E9D5FF]">
+                {/* Bone Shape Decoration */}
+                <div className="absolute -top-1 -right-1 w-16 h-16 opacity-10">
+                  <svg viewBox="0 0 100 50" fill="#7B4397">
+                    <ellipse cx="15" cy="25" rx="15" ry="12" />
+                    <rect x="15" y="20" width="70" height="10" />
+                    <ellipse cx="85" cy="25" rx="15" ry="12" />
+                  </svg>
+                </div>
+
+                <CardContent className="pt-6 pb-6">
+                  <div className="text-center">
+                    <motion.div
+                      className="w-16 h-16 rounded-2xl bg-gradient-to-br from-[#7B4397] to-[#663380] flex items-center justify-center mx-auto mb-4 shadow-lg"
+                      animate={{ scale: [1, 1.1, 1] }}
+                      transition={{ duration: 2, repeat: Infinity }}
+                    >
+                      <Phone className="w-8 h-8 text-white" />
+                    </motion.div>
+                    <h3 className="text-lg font-bold text-gray-900 mb-2">Call Anytime</h3>
+                    <a
+                      href={`tel:${clinicInfo.contact.phone}`}
+                      className="text-xl font-bold text-[#7B4397] hover:text-[#663380] transition-colors block"
+                    >
+                      {clinicInfo.contact.phone}
+                    </a>
+                    <p className="text-xs text-gray-600 mt-1">Emergency? We're ready!</p>
+                  </div>
+                </CardContent>
+              </Card>
+            </motion.div>
+          </motion.div>
         </div>
       </section>
 

@@ -7,7 +7,7 @@ import Image from 'next/image';
 import { usePathname } from 'next/navigation';
 import { Menu, X, Phone } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet';
+import { Sheet, SheetContent, SheetTrigger, SheetTitle } from '@/components/ui/sheet';
 import clinicInfo from '@/data/clinic-info.json';
 
 const navLinks = [
@@ -16,7 +16,6 @@ const navLinks = [
   { name: 'Services', href: '/services' },
   { name: 'Our Team', href: '/team' },
   { name: 'Gallery', href: '/gallery' },
-  { name: 'Blog', href: '/blog' },
   { name: 'Contact', href: '/contact' },
 ];
 
@@ -53,7 +52,7 @@ export const Header: React.FC = () => {
               transition={{ duration: 0.3 }}
             >
               <Image
-                src="/images/logo.png"
+                src="/images/logo.svg"
                 alt="Lifecare Pet Specialty Clinic Logo"
                 width={48}
                 height={48}
@@ -127,10 +126,10 @@ export const Header: React.FC = () => {
             </SheetTrigger>
             <SheetContent side="right" className="w-[300px] sm:w-[400px]">
               <nav className="flex flex-col gap-6 mt-8">
-                <div className="mb-4">
-                  <h2 className="text-2xl font-bold text-gray-900 mb-2">
+                <div className="mb-4 text-center">
+                  <SheetTitle className="text-2xl font-bold text-gray-900 mb-2">
                     {clinicInfo.name.split(' ').slice(0, 2).join(' ')}
-                  </h2>
+                  </SheetTitle>
                   <p className="text-sm text-[#FF6B7A] font-semibold">
                     {clinicInfo.tagline}
                   </p>
@@ -144,11 +143,12 @@ export const Header: React.FC = () => {
                       initial={{ opacity: 0, x: -20 }}
                       animate={{ opacity: 1, x: 0 }}
                       transition={{ delay: index * 0.1 }}
+                      className="text-center"
                     >
                       <Link
                         href={link.href}
                         onClick={() => setMobileMenuOpen(false)}
-                        className={`text-lg font-medium transition-colors duration-300 block py-2 relative ${
+                        className={`text-lg font-medium transition-colors duration-300 inline-block py-2 relative ${
                           isActive
                             ? 'text-[#FF6B7A] font-bold'
                             : 'text-gray-700 hover:text-[#FF6B7A]'
@@ -156,7 +156,7 @@ export const Header: React.FC = () => {
                       >
                         {link.name}
                         {isActive && (
-                          <span className="absolute left-0 top-0 bottom-0 w-1 bg-[#FF6B7A] rounded-r" />
+                          <span className="absolute left-0 right-0 bottom-0 h-0.5 bg-[#FF6B7A] rounded-full" />
                         )}
                       </Link>
                     </motion.div>
