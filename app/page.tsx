@@ -1,7 +1,7 @@
 "use client";
 
-import React from 'react';
-import { motion } from 'framer-motion';
+import React, { useEffect, useRef, useState } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
 import Image from 'next/image';
 import { PawButton, CreativeServiceCard, CreativeTestimonialCard, AnimatedPets, BoneButton } from '@/components/custom';
 import { FloatingElements } from '@/components/custom/FloatingElements';
@@ -14,10 +14,172 @@ import {
   CarouselNext,
   CarouselPrevious,
 } from '@/components/ui/carousel';
-import { Clock, Award, Heart, Shield, Phone, Activity, Dog, Cat, Bird, Footprints } from 'lucide-react';
+import { Clock, Award, Heart, Shield, Phone, Activity, Dog, Cat, Bird, Footprints, ChevronLeft, ChevronRight } from 'lucide-react';
+
+const heroSlides = [
+  {
+    id: 1,
+    src: "https://images.pexels.com/photos/7469218/pexels-photo-7469218.jpeg?auto=compress&cs=tinysrgb&w=800",
+    alt: "Veterinarian examining a dog with care",
+    label: "Expert Veterinary Care",
+    sublabel: "Trusted by thousands of pet parents",
+  },
+  {
+    id: 2,
+    src: "https://images.pexels.com/photos/6235233/pexels-photo-6235233.jpeg?auto=compress&cs=tinysrgb&w=800",
+    alt: "Happy golden retriever at the vet",
+    label: "Happy, Healthy Pets",
+    sublabel: "Comprehensive wellness checkups",
+  },
+  {
+    id: 3,
+    src: "https://images.pexels.com/photos/6235031/pexels-photo-6235031.jpeg?auto=compress&cs=tinysrgb&w=800",
+    alt: "Vet giving a cat a checkup",
+    label: "Compassionate Cat Care",
+    sublabel: "Specialized feline medicine",
+  },
+  {
+    id: 4,
+    src: "https://images.pexels.com/photos/7148390/pexels-photo-7148390.jpeg?auto=compress&cs=tinysrgb&w=800",
+    alt: "Veterinarian with a puppy",
+    label: "24/7 Emergency Service",
+    sublabel: "Always here when you need us",
+  },
+];
 import clinicInfo from '@/data/clinic-info.json';
 import services from '@/data/services.json';
 import testimonials from '@/data/testimonials.json';
+
+function HeroCarousel() {
+  const [current, setCurrent] = useState(0);
+  const [isHovered, setIsHovered] = useState(false);
+  const timerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  const goTo = (index: number) => {
+    setCurrent((index + heroSlides.length) % heroSlides.length);
+  };
+
+  useEffect(() => {
+    if (isHovered) return;
+    timerRef.current = setTimeout(() => {
+      setCurrent((prev) => (prev + 1) % heroSlides.length);
+    }, 3500);
+    return () => {
+      if (timerRef.current) clearTimeout(timerRef.current);
+    };
+  }, [current, isHovered]);
+
+  return (
+    <motion.div
+      className="relative order-2 lg:order-2"
+      initial={{ opacity: 0, x: 50 }}
+      animate={{ opacity: 1, x: 0 }}
+      transition={{ duration: 0.8, delay: 0.3 }}
+      onMouseEnter={() => setIsHovered(true)}
+      onMouseLeave={() => setIsHovered(false)}
+    >
+      <div className="relative">
+        {/* Carousel Frame */}
+        <div className="relative rounded-3xl overflow-hidden shadow-2xl border-4 border-white/60 aspect-square bg-gray-100">
+          <AnimatePresence mode="wait">
+            <motion.div
+              key={heroSlides[current].id}
+              className="absolute inset-0"
+              initial={{ opacity: 0, scale: 1.06 }}
+              animate={{ opacity: 1, scale: 1 }}
+              exit={{ opacity: 0, scale: 0.96 }}
+              transition={{ duration: 0.6, ease: "easeInOut" }}
+            >
+              <Image
+                src={heroSlides[current].src}
+                alt={heroSlides[current].alt}
+                fill
+                className="object-cover"
+                priority={current === 0}
+                sizes="(max-width: 1024px) 100vw, 50vw"
+              />
+              {/* Gradient overlay */}
+              <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-transparent to-transparent pointer-events-none" />
+            </motion.div>
+          </AnimatePresence>
+
+          {/* Slide Label */}
+          <AnimatePresence mode="wait">
+            <motion.div
+              key={`label-${heroSlides[current].id}`}
+              className="absolute bottom-5 left-5 right-5 z-10"
+              initial={{ opacity: 0, y: 12 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -8 }}
+              transition={{ duration: 0.4 }}
+            >
+              <p className="text-white font-bold text-lg drop-shadow-lg leading-tight">
+                {heroSlides[current].label}
+              </p>
+              <p className="text-white/80 text-sm drop-shadow-md">
+                {heroSlides[current].sublabel}
+              </p>
+            </motion.div>
+          </AnimatePresence>
+
+          {/* Prev / Next Buttons */}
+          <button
+            onClick={() => goTo(current - 1)}
+            className="absolute left-3 top-1/2 -translate-y-1/2 z-10 w-9 h-9 rounded-full bg-white/80 hover:bg-white flex items-center justify-center shadow-lg transition-all duration-200 hover:scale-110"
+            aria-label="Previous slide"
+          >
+            <ChevronLeft className="w-5 h-5 text-gray-800" />
+          </button>
+          <button
+            onClick={() => goTo(current + 1)}
+            className="absolute right-3 top-1/2 -translate-y-1/2 z-10 w-9 h-9 rounded-full bg-white/80 hover:bg-white flex items-center justify-center shadow-lg transition-all duration-200 hover:scale-110"
+            aria-label="Next slide"
+          >
+            <ChevronRight className="w-5 h-5 text-gray-800" />
+          </button>
+
+          {/* Dot Indicators */}
+          <div className="absolute top-4 left-1/2 -translate-x-1/2 z-10 flex gap-2">
+            {heroSlides.map((_, i) => (
+              <button
+                key={i}
+                onClick={() => goTo(i)}
+                className={`rounded-full transition-all duration-300 ${
+                  i === current
+                    ? "w-6 h-2.5 bg-white"
+                    : "w-2.5 h-2.5 bg-white/50 hover:bg-white/80"
+                }`}
+                aria-label={`Go to slide ${i + 1}`}
+              />
+            ))}
+          </div>
+        </div>
+
+        {/* Decorative Elements Around Carousel */}
+        <motion.div
+          className="absolute -bottom-6 -left-6 w-20 h-20 rounded-full bg-gradient-to-br from-[#FF6B7A] to-[#e55566] flex items-center justify-center shadow-xl"
+          animate={{ rotate: 360 }}
+          transition={{ duration: 20, repeat: Infinity, ease: "linear" }}
+        >
+          <Heart className="w-10 h-10 text-white" />
+        </motion.div>
+
+        <motion.div
+          className="absolute -top-6 -right-6 w-16 h-16 rounded-full bg-gradient-to-br from-[#FDB913] to-[#e5a40f] flex items-center justify-center shadow-xl"
+          animate={{ rotate: -360 }}
+          transition={{ duration: 15, repeat: Infinity, ease: "linear" }}
+        >
+          <Award className="w-8 h-8 text-white" />
+        </motion.div>
+
+        {/* Slide counter badge */}
+        <div className="absolute -bottom-4 right-8 bg-white rounded-full px-4 py-1 shadow-lg border-2 border-[#FF6B7A]/30 text-sm font-semibold text-gray-700">
+          {current + 1} / {heroSlides.length}
+        </div>
+      </div>
+    </motion.div>
+  );
+}
 
 export default function Home() {
   const featuredServices = services.slice(0, 6);
@@ -207,51 +369,8 @@ export default function Home() {
                 </motion.div>
               </div>
 
-              {/* Right Side - Hero Image */}
-              <motion.div
-                className="relative order-2 lg:order-2"
-                initial={{ opacity: 0, x: 50 }}
-                animate={{ opacity: 1, x: 0 }}
-                transition={{ duration: 0.8, delay: 0.3 }}
-              >
-                <div className="relative">
-                  {/* Main Hero Image with Frame */}
-                  <motion.div
-                    className="relative rounded-3xl overflow-hidden shadow-2xl"
-                    whileHover={{ scale: 1.02 }}
-                    transition={{ duration: 0.3 }}
-                  >
-                    <div className="aspect-square relative">
-                      <Image
-                        src="/images/herosection.png"
-                        alt="Lifecare Pet Clinic - Compassionate Care"
-                        fill
-                        className="object-cover"
-                        priority
-                      />
-                      {/* Gradient Overlay */}
-                      <div className="absolute inset-0 bg-gradient-to-t from-[#FF6B7A]/10 via-transparent to-[#FDB913]/10 pointer-events-none" />
-                    </div>
-                  </motion.div>
-
-                  {/* Decorative Elements Around Image */}
-                  <motion.div
-                    className="absolute -bottom-6 -left-6 w-24 h-24 rounded-full bg-gradient-to-br from-[#FF6B7A] to-[#e55566] flex items-center justify-center shadow-xl"
-                    animate={{ rotate: 360 }}
-                    transition={{ duration: 20, repeat: Infinity, ease: "linear" }}
-                  >
-                    <Heart className="w-12 h-12 text-white" />
-                  </motion.div>
-
-                  <motion.div
-                    className="absolute -top-6 -right-6 w-20 h-20 rounded-full bg-gradient-to-br from-[#FDB913] to-[#e5a40f] flex items-center justify-center shadow-xl"
-                    animate={{ rotate: -360 }}
-                    transition={{ duration: 15, repeat: Infinity, ease: "linear" }}
-                  >
-                    <Award className="w-10 h-10 text-white" />
-                  </motion.div>
-                </div>
-              </motion.div>
+              {/* Right Side - Hero Carousel */}
+              <HeroCarousel />
             </div>
 
             {/* Stats - Full Width Below */}
