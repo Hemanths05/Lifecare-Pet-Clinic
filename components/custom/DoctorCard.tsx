@@ -12,12 +12,8 @@ interface DoctorCardProps {
   title: string;
   specialization: string;
   qualifications: string;
-  experience: number;
   bio: string;
-  education: string[];
   image: string;
-  email: string;
-  phone: string;
 }
 
 export const DoctorCard: React.FC<DoctorCardProps> = ({
@@ -25,7 +21,6 @@ export const DoctorCard: React.FC<DoctorCardProps> = ({
   title,
   specialization,
   qualifications,
-  experience,
   bio,
   image,
 }) => {
