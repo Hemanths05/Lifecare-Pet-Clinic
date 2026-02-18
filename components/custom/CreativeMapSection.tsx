@@ -8,10 +8,11 @@ export const CreativeMapSection: React.FC = () => {
   const [isMapHovered, setIsMapHovered] = useState(false);
   const [mapType, setMapType] = useState<'roadmap' | 'satellite'>('roadmap');
 
-  // Map URLs with wider zoom level (13.5 shows more surrounding area)
+  // Map URLs centered on coordinates - no default marker so custom paw icon is the only marker
+  const { latitude, longitude } = clinicInfo.location;
   const mapUrls = {
-    roadmap: "https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3914.856781234567!2d77.20869731480!3d10.849003292294567!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.5!3m3!1m2!1s0x9dd49f0e129e005%3A0xd3eb7577ffa80470!2sLifecare%20Pet%20Speciality%20Clinic!5e0!3m2!1sen!2sin!4v1707382000000",
-    satellite: "https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3914.856781234567!2d77.20869731480!3d10.849003292294567!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.5!3m3!1m2!1s0x9dd49f0e129e005%3A0xd3eb7577ffa80470!2sLifecare%20Pet%20Speciality%20Clinic!5e1!3m2!1sen!2sin!4v1707382000000"
+    roadmap: `https://www.google.com/maps/embed?pb=!1m14!1m12!1m3!1d3914.856!2d${longitude}!3d${latitude}!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f17!5e0!3m2!1sen!2sin!4v${Date.now()}`,
+    satellite: `https://www.google.com/maps/embed?pb=!1m14!1m12!1m3!1d3914.856!2d${longitude}!3d${latitude}!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f17!5e1!3m2!1sen!2sin!4v${Date.now()}`
   };
 
   return (
@@ -86,7 +87,7 @@ export const CreativeMapSection: React.FC = () => {
                 <div className="relative">
                   {/* Pulse Rings */}
                   <motion.div
-                    className="absolute inset-0 w-24 h-24 -translate-x-1/2 -translate-y-1/2 top-1/2 left-1/2"
+                    className="absolute inset-0 w-16 h-16 -translate-x-1/2 -translate-y-1/2 top-1/2 left-1/2"
                     animate={{ scale: [1, 1.5, 1], opacity: [0.5, 0, 0.5] }}
                     transition={{ duration: 2, repeat: Infinity }}
                   >
@@ -94,7 +95,7 @@ export const CreativeMapSection: React.FC = () => {
                   </motion.div>
 
                   {/* Paw Marker */}
-                  <svg width="80" height="80" viewBox="0 0 80 80" className="drop-shadow-2xl">
+                  <svg width="55" height="55" viewBox="0 0 80 80" className="drop-shadow-2xl">
                     {/* Main Paw Pad */}
                     <ellipse cx="40" cy="50" rx="18" ry="22" fill="#FF6B7A" stroke="white" strokeWidth="3" />
                     {/* Top Left Toe */}

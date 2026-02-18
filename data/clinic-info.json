@@ -23,14 +23,14 @@
     "latitude": 10.8490032,
     "longitude": 77.2112945,
     "placeId": "ChIJBQAOEg6f3ToRcAT4_3d17dM",
-    "mapLink": "https://www.google.com/maps/place/Lifecare+Pet+Speciality+Clinic/@10.8490032,77.2112945,17z/data=!3m1!4b1!4m6!3m5!1s0x9dd49f0e129e005:0xd3eb7577ffa80470!8m2!3d10.8490032!4d77.2112945!16s%2Fg%2F11yyhljhcm",
-    "mapLinkShort": "https://maps.app.goo.gl/FCN9StSahZebzHbi6"
+    "mapLink": "https://maps.app.goo.gl/BStcuh2K5Zv4kpBC8",
+    "mapLinkShort": "https://maps.app.goo.gl/BStcuh2K5Zv4kpBC8"
   },
   "contact": {
     "reception": "+91 93428 93438",
     "ambulance": "+91 93429 93439",
     "office": "+91 93424 93434",
-    "email": "info@lifecarepetclinic.com",
+    "email": "info.lifecarevet@gmail.com",
     "whatsapp": "+91 93428 93438"
   },
   "hours": {
@@ -38,10 +38,7 @@
     "emergency": "24/7 Emergency Service Available"
   },
   "social": {
-    "facebook": "https://facebook.com/lifecarepetclinic",
-    "instagram": "https://instagram.com/lifecarepetclinic",
-    "twitter": "https://twitter.com/lifecarepetclinic",
-    "youtube": "https://youtube.com/@lifecarepetclinic"
+    "instagram": "https://instagram.com/lifecarepetspecialityclinic"
   },
   "stats": {
     "yearsOfExperience": 10,

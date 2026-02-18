@@ -4,7 +4,7 @@ import React from 'react';
 import { motion } from 'framer-motion';
 import Link from 'next/link';
 import Image from 'next/image';
-import { Facebook, Instagram, Twitter, Youtube, MapPin, Phone, Mail, Clock } from 'lucide-react';
+import { Instagram, MapPin, Phone, Mail, Clock } from 'lucide-react';
 import { FloatingElements } from '@/components/custom/FloatingElements';
 import clinicInfo from '@/data/clinic-info.json';
 import services from '@/data/services.json';
@@ -56,26 +56,16 @@ export const Footer: React.FC = () => {
             <p className="text-gray-400 text-sm mb-6 leading-relaxed">
               {clinicInfo.mission}
             </p>
-            <div className="flex gap-4">
-              {[
-                { icon: Facebook, href: clinicInfo.social.facebook },
-                { icon: Instagram, href: clinicInfo.social.instagram },
-                { icon: Twitter, href: clinicInfo.social.twitter },
-                { icon: Youtube, href: clinicInfo.social.youtube },
-              ].map((social, index) => (
-                <motion.a
-                  key={index}
-                  href={social.href}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="w-10 h-10 rounded-full bg-white/10 hover:bg-[#FF6B7A] flex items-center justify-center transition-all duration-300"
-                  whileHover={{ scale: 1.1, rotate: 5 }}
-                  whileTap={{ scale: 0.9 }}
-                >
-                  <social.icon className="w-5 h-5" />
-                </motion.a>
-              ))}
-            </div>
+            <motion.a
+              href={clinicInfo.social.instagram}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex items-center gap-2 text-gray-400 hover:text-[#FF6B7A] transition-colors duration-300 text-sm group"
+              whileHover={{ x: 5 }}
+            >
+              <Instagram className="w-5 h-5 flex-shrink-0" />
+              <span className="group-hover:underline">Follow us on Instagram</span>
+            </motion.a>
           </motion.div>
 
           {/* Quick Links Column */}
@@ -142,10 +132,15 @@ export const Footer: React.FC = () => {
             <ul className="space-y-4">
               <li className="flex items-start gap-3 text-sm">
                 <MapPin className="w-5 h-5 text-[#FF6B7A] flex-shrink-0 mt-0.5" />
-                <span className="text-gray-400">
+                <a
+                  href={clinicInfo.location.mapLink}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-gray-400 hover:text-[#FF6B7A] transition-colors cursor-pointer"
+                >
                   {clinicInfo.address.street}, {clinicInfo.address.area},{' '}
                   {clinicInfo.address.city} {clinicInfo.address.pincode}
-                </span>
+                </a>
               </li>
               <li className="flex items-start gap-3 text-sm">
                 <Phone className="w-5 h-5 text-[#FF6B7A] flex-shrink-0 mt-0.5" />

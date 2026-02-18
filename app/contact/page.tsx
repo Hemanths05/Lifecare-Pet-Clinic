@@ -135,7 +135,7 @@ export default function ContactPage() {
                 icon: MapPin,
                 title: 'Visit Us',
                 content: `${clinicInfo.address.street}, ${clinicInfo.address.area}, ${clinicInfo.address.city}`,
-                link: `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(clinicInfo.address.street + ' ' + clinicInfo.address.area + ' ' + clinicInfo.address.city)}`,
+                link: clinicInfo.location.mapLink,
                 color: 'from-[#FF6B7A] to-[#e55566]',
               },
               {
